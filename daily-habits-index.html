@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>عاداتي اليومية</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #0f0c29, #1a1a4e, #0f0c29);
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .date-badge {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
+    padding: 8px 24px;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #a8c7ff;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #4fc3f7, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Progress Bar */
+  .progress-section {
+    background: rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: #a8c7ff;
+  }
+
+  .progress-bar-bg {
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    height: 18px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #1565c0, #42a5f5);
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Grid of square habit bars */
+  .habits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .habit-card {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .habit-card:active { transform: scale(0.96); }
+
+  .habit-card.done {
+    background: rgba(21, 101, 192, 0.35);
+    border-color: #42a5f5;
+  }
+
+  .habit-card.done::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(66,165,245,0.15), transparent);
+  }
+
+  .habit-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .habit-emoji { font-size: 24px; }
+
+  .check-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 14px;
+  }
+
+  .habit-card.done .check-box {
+    background: #1565c0;
+    border-color: #42a5f5;
+    color: #fff;
+  }
+
+  .habit-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+
+  /* Square progress bar inside each card */
+  .habit-bar-bg {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+  }
+
+  .habit-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #1565c0, #42a5f5);
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  .habit-card.done .habit-bar-fill { width: 100%; }
+
+  /* Motivation popup */
+  .popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .popup-overlay.show { display: flex; }
+
+  .popup-box {
+    background: linear-gradient(135deg, #1a1a4e, #0d47a1);
+    border: 1px solid rgba(66,165,245,0.5);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .popup-emoji { font-size: 52px; margin-bottom: 12px; }
+  .popup-title { font-size: 20px; font-weight: 900; color: #42a5f5; margin-bottom: 10px; }
+  .popup-text { font-size: 15px; line-height: 1.8; color: #e0e0e0; margin-bottom: 20px; }
+  .popup-source { font-size: 12px; color: #7986cb; margin-bottom: 20px; font-style: italic; }
+
+  .popup-btn {
+    background: linear-gradient(90deg, #1565c0, #42a5f5);
+    border: none;
+    border-radius: 30px;
+    padding: 12px 32px;
+    color: #fff;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .popup-btn:active { transform: scale(0.95); }
+
+  /* Confetti */
+  .confetti-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    animation: confettiFall 2.5s ease-in forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* All done celebration */
+  .all-done-banner {
+    display: none;
+    background: linear-gradient(135deg, #1565c0, #7b1fa2);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(66,165,245,0.4); }
+    50% { box-shadow: 0 0 0 15px rgba(66,165,245,0); }
+  }
+
+  .all-done-banner.show { display: block; }
+  .all-done-banner .trophy { font-size: 40px; margin-bottom: 8px; }
+  .all-done-banner h2 { font-size: 20px; font-weight: 900; }
+  .all-done-banner p { font-size: 13px; color: #b3e5fc; margin-top: 6px; }
+
+  .reset-btn {
+    display: block;
+    width: 100%;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 14px;
+    color: #fff;
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background 0.3s;
+  }
+
+  .reset-btn:hover { background: rgba(255,255,255,0.15); }
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confetti"></div>
+
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-box">
+    <div class="popup-emoji" id="popupEmoji">🌟</div>
+    <div class="popup-title" id="popupTitle"></div>
+    <div class="popup-text" id="popupText"></div>
+    <div class="popup-source" id="popupSource"></div>
+    <button class="popup-btn" onclick="closePopup()">حسناً ✓</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="date-badge" id="dateLabel">📅 ...</div>
+    <h1>✨ عاداتي اليومية</h1>
+  </div>
+
+  <div class="all-done-banner" id="allDoneBanner">
+    <div class="trophy">🏆</div>
+    <h2>ما شاء الله! أتممت كل عاداتك!</h2>
+    <p>يومك مثالي — استمر في هذا الطريق المبارك 🤍</p>
+  </div>
+
+  <div class="progress-section">
+    <div class="progress-label">
+      <span>التقدم اليومي</span>
+      <span id="progressText">0 / 11</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="mainProgress" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="habits-grid" id="habitsGrid"></div>
+
+  <button class="reset-btn" onclick="resetAll()">🔄 إعادة تعيين اليوم</button>
+</div>
+
+<script>
+const habits = [
+  {
+    id: 'fajr', name: 'صلاة الفجر', emoji: '🕌',
+    doneMsg: { title: '🌅 الله أكبر!', text: 'أدركت صلاة الفجر في وقتها!\n"صلاة الفجر في جماعة كقيام ليلة."', source: '— متفق عليه', emoji: '🌟' },
+    skipMsg: { title: '⚠️ صلاة الفجر كنز!', text: 'من أدرك صلاة الفجر في وقتها فكأنما أحيى الليل كله.\nلا تفوّتك هذا الكنز العظيم غداً.', source: '— قيمة الفجر', emoji: '🕌' }
+  },
+  {
+    id: 'quran', name: 'قراءة القرآن', emoji: '📖',
+    doneMsg: { title: '🌸 بارك الله فيكِ!', text: 'القرآن شفاء ونور.\n"اقرأ القرآن فإنه يأتي يوم القيامة شفيعاً لأصحابه."', source: '— صحيح مسلم', emoji: '✨' },
+    skipMsg: { title: '📖 القرآن أفضل شيء!', text: 'يا نور، القرآن حبل الله المتين ونوره في قلبك.\nولو آية واحدة — افتحيه الآن.', source: '— لا تتركيه', emoji: '🌙' }
+  },
+  {
+    id: 'morning_azkar', name: 'أذكار الصباح', emoji: '📜',
+    doneMsg: { title: '☀️ صباح النور!', text: 'حصّنتِ يومك بذكر الله.\n"من قال حين يصبح هذه الكلمات حُفظ حتى يمسي."', source: '— الحصن', emoji: '🛡️' },
+    skipMsg: { title: '📜 الحصن لا تتركيه!', text: 'أذكار الصباح درعك من كل سوء.\n"حصن" نفسك قبل أن يبدأ يومك — دقيقتان فقط.', source: '— حصنك اليومي', emoji: '🌿' }
+  },
+  {
+    id: 'evening_azkar', name: 'أذكار المساء', emoji: '📜',
+    doneMsg: { title: '🌙 أحسنتِ!', text: 'ختمتِ مساءك بذكر الله — هذا النور يحفظكِ.', source: '— بارك الله فيكِ', emoji: '🌟' },
+    skipMsg: { title: '📜 لا تنامي بدونها!', text: 'أذكار المساء حصنك قبل النوم.\nاقرئيها الآن قبل أن تغمض عينيكِ.', source: '— الحصن المسائي', emoji: '🌙' }
+  },
+  {
+    id: 'duhr', name: 'صلاة الظهر', emoji: '🕌',
+    doneMsg: { title: '✅ أحسنتِ!', text: 'الصلاة عماد الدين.\nحافظتِ على هذا العمود المبارك.', source: '— جزاكِ الله خيراً', emoji: '💙' },
+    skipMsg: { title: '🕌 الصلاة نداء الله!', text: 'الصلاة أول ما يُحاسب عليه العبد يوم القيامة.\nقومي الآن — الله ينتظر.', source: '— أقم الصلاة', emoji: '⚠️' }
+  },
+  {
+    id: 'asr', name: 'صلاة العصر', emoji: '🕌',
+    doneMsg: { title: '🌤️ بارك الله فيكِ!', text: 'صلاة العصر محافظة على الصلاة الوسطى.\nحافظتِ على ما أوصى به الله.', source: '— البقرة 238', emoji: '🌸' },
+    skipMsg: { title: '⚠️ الصلاة الوسطى!', text: '"حافظوا على الصلوات والصلاة الوسطى"\nلا تفوّتي العصر — هو الصلاة الوسطى.', source: '— البقرة 238', emoji: '🕌' }
+  },
+  {
+    id: 'maghrib', name: 'صلاة المغرب', emoji: '🕌',
+    doneMsg: { title: '🌆 ما شاء الله!', text: 'الله أكبر — أتممتِ صلاة المغرب في وقتها.\nاستمري في هذا الطريق المبارك.', source: '— بارك الله فيكِ', emoji: '✨' },
+    skipMsg: { title: '🕌 المغرب ينتهي وقته سريعاً!', text: 'وقت المغرب قصير — قومي الآن فوراً\nقبل أن يضيق الوقت.', source: '— أقيمي الصلاة', emoji: '⏰' }
+  },
+  {
+    id: 'isha', name: 'صلاة العشاء', emoji: '🕌',
+    doneMsg: { title: '🌙 ما شاء الله!', text: 'من صلى العشاء في جماعة فكأنما قام نصف الليل.\nيومك مبارك.', source: '— صحيح مسلم', emoji: '💫' },
+    skipMsg: { title: '🕌 العشاء لا تتركيها!', text: '"من صلى العشاء في جماعة فكأنما قام نصف الليل."\nلا تحرمي نفسك من هذا الأجر.', source: '— صحيح مسلم', emoji: '🌙' }
+  },
+  {
+    id: 'exercise', name: 'التمارين', emoji: '🏃‍♀️',
+    doneMsg: { title: '💪 رائعة!', text: '"المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف."\nجسمك أمانة — أحسنتِ العناية به!', source: '— صحيح مسلم', emoji: '🏆' },
+    skipMsg: { title: '🏃‍♀️ جسمك أمانة!', text: '"المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف."\nولو 10 دقائق مشي — حركي جسمك.', source: '— صحيح مسلم', emoji: '💡' }
+  },
+  {
+    id: 'read', name: 'قراءة كتاب', emoji: '📕',
+    doneMsg: { title: '📚 ما شاء الله!', text: 'القراءة تنمي عقلك وترفع درجتك.\nاستمري — كل صفحة تقربكِ من أهدافك!', source: '— "اقرأ"', emoji: '🌟' },
+    skipMsg: { title: '📕 اقرأ ولو صفحة!', text: 'أول كلمة نزلت في القرآن: "اقرأ"\nولو 5 دقائق فقط — عقلك يستحق الغذاء.', source: '— العلق 1', emoji: '💙' }
+  },
+  {
+    id: 'sleep', name: 'النوم 8 ساعات', emoji: '🛌',
+    doneMsg: { title: '😴 جسمك شكرك!', text: 'النوم الكافي يجدد طاقتك ويقوي إيمانك.\nاستمري على هذا النظام الصحي المبارك!', source: '— صحتك أمانة', emoji: '💚' },
+    skipMsg: { title: '🛌 النوم عبادة!', text: 'جسمك له حق عليكِ.\nالنوم يجدد طاقتك للعبادة — نامي مبكراً الليلة.', source: '— "إن لجسدك عليك حقاً"', emoji: '🌙' }
+  }
+];
+
+let state = {};
+
+function init() {
+  const today = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('dateLabel').textContent = '📅 ' + today.toLocaleDateString('ar-EG', options);
+
+  const saved = localStorage.getItem('habitsState_' + today.toDateString());
+  state = saved ? JSON.parse(saved) : {};
+
+  renderHabits();
+}
+
+function renderHabits() {
+  const grid = document.getElementById('habitsGrid');
+  grid.innerHTML = '';
+  habits.forEach(h => {
+    const done = !!state[h.id];
+    const card = document.createElement('div');
+    card.className = 'habit-card' + (done ? ' done' : '');
+    card.innerHTML = `
+      <div class="habit-top">
+        <span class="habit-emoji">${h.emoji}</span>
+        <div class="check-box">${done ? '✓' : ''}</div>
+      </div>
+      <div class="habit-name">${h.name}</div>
+      <div class="habit-bar-bg">
+        <div class="habit-bar-fill" style="width:${done ? '100' : '0'}%"></div>
+      </div>
+    `;
+    card.onclick = () => toggleHabit(h);
+    grid.appendChild(card);
+  });
+  updateProgress();
+}
+
+function toggleHabit(habit) {
+  const wasDone = !!state[habit.id];
+  state[habit.id] = !wasDone;
+  const today = new Date();
+  localStorage.setItem('habitsState_' + today.toDateString(), JSON.stringify(state));
+  renderHabits();
+
+  if (!wasDone) {
+    // Just completed
+    showPopup(habit.doneMsg);
+    launchConfetti();
+    const doneCount = Object.values(state).filter(Boolean).length;
+    if (doneCount === habits.length) {
+      setTimeout(() => {
+        document.getElementById('allDoneBanner').classList.add('show');
+        launchConfetti();
+        launchConfetti();
+      }, 800);
+    }
+  } else {
+    // Unchecked — show reminder
+    showPopup(habit.skipMsg);
+    document.getElementById('allDoneBanner').classList.remove('show');
+  }
+}
+
+function showPopup(msg) {
+  document.getElementById('popupEmoji').textContent = msg.emoji;
+  document.getElementById('popupTitle').textContent = msg.title;
+  document.getElementById('popupText').textContent = msg.text;
+  document.getElementById('popupSource').textContent = msg.source;
+  document.getElementById('popupOverlay').classList.add('show');
+}
+
+function closePopup() {
+  document.getElementById('popupOverlay').classList.remove('show');
+}
+
+function updateProgress() {
+  const done = Object.values(state).filter(Boolean).length;
+  const total = habits.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('progressText').textContent = done + ' / ' + total;
+  document.getElementById('mainProgress').style.width = pct + '%';
+  if (done === total) {
+    document.getElementById('allDoneBanner').classList.add('show');
+  }
+}
+
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  const colors = ['#42a5f5','#7b1fa2','#1565c0','#f9a825','#ffffff','#4dd0e1','#a78bfa'];
+  for (let i = 0; i < 30; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.cssText = `
+      left: ${Math.random()*100}%;
+      top: -10px;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+      width: ${6 + Math.random()*8}px;
+      height: ${6 + Math.random()*8}px;
+      animation-delay: ${Math.random()*0.8}s;
+      animation-duration: ${1.5 + Math.random()*1.5}s;
+    `;
+    container.appendChild(piece);
+    setTimeout(() => piece.remove(), 3000);
+  }
+}
+
+function resetAll() {
+  if (confirm('هل تريدين إعادة تعيين كل العادات؟')) {
+    state = {};
+    const today = new Date();
+    localStorage.removeItem('habitsState_' + today.toDateString());
+    document.getElementById('allDoneBanner').classList.remove('show');
+    renderHabits();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
